@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single" >
+        <item android:id="@+id/navigation_tencent_raster"
+              android:title="@string/navi_tencent_raster"
+              android:checkable="true"/>
+        <item android:id="@+id/navigation_tencent_vector"
+              android:title="@string/navi_tencent_vector"
+              android:checkable="true"/>
+    </group>
+</menu>
