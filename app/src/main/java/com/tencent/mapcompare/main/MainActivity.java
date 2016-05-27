@@ -1,5 +1,6 @@
 package com.tencent.mapcompare.main;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -9,11 +10,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PersistableBundle;
 import android.os.RemoteException;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -43,6 +49,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements MapCameraChangedListener{
 
     protected static final String LOG_TAG = "BLUETOOTH";
+    private static final int PERMISSION_STORAGE_CODE = 1;
 
     private boolean mBound = false;
     /**
@@ -158,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements MapCameraChangedL
                     @Override
                     public void onConnectSuccess(CameraChangeObject cameraChangeObject) throws RemoteException {
                         currentMapFragment.setCameraPosition(cameraChangeObject);
+                        Toast.makeText(MainActivity.this, getText(R.string.bluetooth_device_connected), Toast.LENGTH_SHORT).show();
                     }
                 });
             } catch (RemoteException e) {
@@ -177,27 +185,29 @@ public class MainActivity extends AppCompatActivity implements MapCameraChangedL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        checkPermission();
         ba = BluetoothAdapter.getDefaultAdapter();
 
-        initView();
+        initView(savedInstanceState);
         setListener();
 
         //Start bluetooth connection service to listen client
-        Intent bcs = new Intent(this, BluetoothConnectionService.class);
-        startService(bcs);
-        bindService(bcs, sc, BIND_AUTO_CREATE);
+        if (isBluetoothAvailable()) {
+            Intent bcs = new Intent(this, BluetoothConnectionService.class);
+            startService(bcs);
+            bindService(bcs, sc, BIND_AUTO_CREATE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         registerBroadcasts();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     @Override
@@ -218,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements MapCameraChangedL
             unbindService(sc);
             mBound = false;
         }
+        tabAdapter = null;
     }
 
     @Override
@@ -281,17 +292,14 @@ public class MainActivity extends AppCompatActivity implements MapCameraChangedL
         }
     }
 
-    protected void initView() {
+    protected void initView(Bundle savedInstanceState) {
         //set toolbar
         tb_main = (Toolbar) findViewById(R.id.tb_main);
         setSupportActionBar(tb_main);
 
         //set viewpager
         viewPager = (MyViewPager) findViewById(R.id.vp);
-        List<MapFragment> fragments = new ArrayList<MapFragment>();
-        fragments.add(new TencentRasterMapFragment());
-        fragments.add(new TencentVectorMapFragment());
-        tabAdapter = new TabAdapter(getSupportFragmentManager(), fragments);
+        tabAdapter = new TabAdapter(getSupportFragmentManager());
 
         viewPager.setAdapter(tabAdapter);
 
@@ -304,8 +312,13 @@ public class MainActivity extends AppCompatActivity implements MapCameraChangedL
         if (menu != null) {
             menu.findItem(R.id.navigation_tencent_raster).setChecked(true);
         }
-        //Initialize the currentMapFragment
-        currentMapFragment = tabAdapter.getItem(0);
+        if (savedInstanceState == null) {
+            List<MapFragment> fragments = new ArrayList<MapFragment>();
+            fragments.add(new TencentRasterMapFragment());
+            fragments.add(new TencentVectorMapFragment());
+            tabAdapter.setFragments(fragments);
+            tabAdapter.notifyDataSetChanged();
+        }
     }
 
     protected void setListener() {
@@ -339,7 +352,21 @@ public class MainActivity extends AppCompatActivity implements MapCameraChangedL
             }
         });
 
-        tabAdapter.getItem(0).setOnCameraChangedListener(this);
+//        (tabAdapter.getItem(0)).setOnCameraChangedListener(this);
+        tabAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                if (tabAdapter.getItem(0) != null) {
+                    (tabAdapter.getItem(0)).setOnCameraChangedListener(MainActivity.this);
+                }
+            }
+
+            @Override
+            public void onInvalidated() {
+                super.onInvalidated();
+            }
+        });
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             int lastposition;
@@ -351,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements MapCameraChangedL
             @Override
             public void onPageSelected(int position) {
                 tabAdapter.getItem(lastposition).setOnCameraChangedListener(null);
-                currentMapFragment = tabAdapter.getItem(position);
+                currentMapFragment = (MapFragment) tabAdapter.getItem(position);
                 currentMapFragment.setOnCameraChangedListener(MainActivity.this);
                 lastposition = position;
             }
@@ -361,21 +388,6 @@ public class MainActivity extends AppCompatActivity implements MapCameraChangedL
 
             }
         });
-
-//        viewPager.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                switch (event.getAction()) {
-//                    case MotionEvent.ACTION_DOWN:
-//                        isTouching = true;
-//                        break;
-//                    case MotionEvent.ACTION_UP:
-//                        isTouching = false;
-//                        break;
-//                }
-//                return false;
-//            }
-//        });
     }
 
     protected boolean isBluetoothAvailable() {
@@ -445,7 +457,7 @@ public class MainActivity extends AppCompatActivity implements MapCameraChangedL
      */
     protected void showDeviceDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View vDialog = View.inflate(this, R.layout.dialog_device_picker, null);
+        final View vDialog = View.inflate(this, R.layout.dialog_device_picker, null);
         builder.setView(vDialog);
         final AlertDialog dialog = builder.create();
 
@@ -467,6 +479,8 @@ public class MainActivity extends AppCompatActivity implements MapCameraChangedL
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
+                } else {
+                    view.setClickable(false);
                 }
             }
         });
@@ -491,6 +505,57 @@ public class MainActivity extends AppCompatActivity implements MapCameraChangedL
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(btsReceiver, filter);
+    }
+
+    protected void checkPermission() {
+        int permissionStorageCheck = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permissionPhoneStateCheck = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.READ_PHONE_STATE);
+        List<String> strPermissions = new ArrayList<String>();
+        if (permissionStorageCheck != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                    this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                strPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                    this, Manifest.permission.READ_PHONE_STATE)){
+                strPermissions.add(Manifest.permission.READ_PHONE_STATE);
+            }
+            if (strPermissions.size() > 0){
+                ActivityCompat.requestPermissions(
+                        this,
+                        strPermissions.toArray(new String[strPermissions.size()]),
+                        PERMISSION_STORAGE_CODE);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        StringBuilder strPermissionWarnBuilder = new StringBuilder();
+        switch (requestCode) {
+            case PERMISSION_STORAGE_CODE:
+                if (grantResults.length > 0) {
+                    for (int i = 0; i < grantResults.length; i++) {
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                            strPermissionWarnBuilder.append(permissions[i]).append("\n");
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        if (strPermissionWarnBuilder.length() > 0) {
+            strPermissionWarnBuilder.append("These permissions needed to be granted!");
+            Toast.makeText(
+                    MainActivity.this,
+                    strPermissionWarnBuilder.toString(),
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     protected void sendCamerChangMessage(boolean isChangeing, CameraPosition cameraPosition) {

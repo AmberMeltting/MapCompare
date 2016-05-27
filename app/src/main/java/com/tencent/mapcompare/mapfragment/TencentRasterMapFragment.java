@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tencent.mapcompare.bluetoothobject.CameraChangeObject;
+import com.tencent.mapcompare.util.Log;
 import com.tencent.mapsdk.raster.model.CameraPosition;
 import com.tencent.mapsdk.raster.model.LatLng;
 import com.tencent.tencentmap.mapsdk.map.CameraUpdateFactory;
@@ -45,6 +46,7 @@ public class TencentRasterMapFragment extends MapFragment implements TencentMap.
         });
         mTencentMap = mMapView.getMap();
         mTencentMap.setOnMapCameraChangeListener(this);
+        Log.d("raster fragment create view");
         return mMapView;
     }
 

@@ -8,108 +8,108 @@ public class Log {
 
     private static final String DEFAULT_TAG = "wxk";
 
-    private static void log(char level, String tag, String text, Throwable throwable) {
-        if (!DEBUG && level != 'e') {
+    private static void log(int level, String tag, String text, Throwable throwable) {
+        if (!DEBUG && level != android.util.Log.ERROR) {
             return;
         }
         if (tag == null) {
             tag = DEFAULT_TAG;
         }
         switch (level) {
-            case 'e':
+            case android.util.Log.ERROR:
                 android.util.Log.e(tag, text, throwable);
                 break;
-            case 'w':
+            case android.util.Log.WARN:
                 android.util.Log.w(tag, text, throwable);
                 break;
-            case 'd':
+            case android.util.Log.DEBUG:
                 android.util.Log.d(tag, text, throwable);
                 break;
-            case 'i':
+            case android.util.Log.INFO:
                 android.util.Log.i(tag, text, throwable);
                 break;
-            case 'v':
+            case android.util.Log.VERBOSE:
                 android.util.Log.v(tag, text, throwable);
             break;
         }
     }
 
     public static void e(String tag, String msg) {
-        log('e', tag, msg, null);
+        log(android.util.Log.ERROR, tag, msg, null);
     }
 
     public static void e(String tag, String msg, Throwable throwable) {
-        log('e', tag, msg, throwable);
+        log(android.util.Log.ERROR, tag, msg, throwable);
     }
 
     public static void e(String msg) {
-        log('e', null, msg, null);
+        log(android.util.Log.ERROR, null, msg, null);
     }
 
     public static void e(String msg, Throwable throwable) {
-        log('e', null, msg, throwable);
+        log(android.util.Log.ERROR, null, msg, throwable);
     }
 
     public static void w(String tag, String msg) {
-        log('w', tag, msg, null);
+        log(android.util.Log.WARN, tag, msg, null);
     }
 
     public static void w(String tag, String msg, Throwable throwable) {
-        log('w', tag, msg, throwable);
+        log(android.util.Log.WARN, tag, msg, throwable);
     }
 
     public static void w(String msg) {
-        log('w', null, msg, null);
+        log(android.util.Log.WARN, null, msg, null);
     }
 
     public static void w(String msg, Throwable throwable) {
-        log('w', null, msg, throwable);
+        log(android.util.Log.WARN, null, msg, throwable);
     }
 
     public static void d(String tag, String msg) {
-        log('d', tag, msg, null);
+        log(android.util.Log.DEBUG, tag, msg, null);
     }
 
     public static void d(String tag, String msg, Throwable throwable) {
-        log('d', tag, msg, throwable);
+        log(android.util.Log.DEBUG, tag, msg, throwable);
     }
 
     public static void d(String msg) {
-        log('d', null, msg, null);
+        log(android.util.Log.DEBUG, null, msg, null);
     }
 
     public static void d(String msg, Throwable throwable) {
-        log('d', null, msg, throwable);
+        log(android.util.Log.DEBUG, null, msg, throwable);
     }
 
     public static void i(String tag, String msg) {
-        log('i', tag, msg, null);
+        log(android.util.Log.INFO, tag, msg, null);
     }
 
     public static void i(String tag, String msg, Throwable throwable) {
-        log('i', tag, msg, throwable);
+        log(android.util.Log.INFO, tag, msg, throwable);
     }
 
     public static void i(String msg) {
-        log('i', null, msg, null);
+        log(android.util.Log.INFO, null, msg, null);
     }
 
     public static void i(String msg, Throwable throwable) {
-        log('i', null, msg, throwable);
+        log(android.util.Log.INFO, null, msg, throwable);
     }
     public static void v(String tag, String msg) {
-        log('v', tag, msg, null);
+        log(android.util.Log.VERBOSE, tag, msg, null);
     }
 
     public static void v(String tag, String msg, Throwable throwable) {
-        log('v', tag, msg, throwable);
+        log(android.util.Log.VERBOSE, tag, msg, throwable);
     }
 
     public static void v(String msg) {
-        log('v', null, msg, null);
+        log(android.util.Log.VERBOSE, null, msg, null);
     }
 
     public static void v(String msg, Throwable throwable) {
-        log('v', null, msg, throwable);
+        log(android.util.Log.VERBOSE, null, msg, throwable);
     }
 }

@@ -1,24 +1,26 @@
 <resources>
     <string name="app_name">MapCompare</string>
     <string name="action_bluetooth">bluetooth</string>
-    <string name="action_descoverable_descoverable">开放检测</string>
-    <string name="action_descoverable_undescoverable">关闭检测</string>
-    <string name="action_connect">连接设备</string>
+    <string name="action_descoverable_descoverable">Descoverable</string>
+    <string name="action_descoverable_undescoverable">Undescoverable</string>
+    <string name="action_connect">Connect With Device</string>
 
-    <string name="dialog_title_bluetooth">蓝牙设备</string>
-    <string name="toast_bluetooth_closed">请打开蓝牙</string>
+    <string name="dialog_title_bluetooth">Bluetooth Devices</string>
+    <string name="toast_bluetooth_closed">Please enable bluetooth</string>
 
-    <string name="sc_open_bluetooth">打开蓝牙</string>
-    <string name="sc_close_bluetooth">关闭蓝牙</string>
-    <string name="sc_bluetooth_detected">开放检测</string>
-    <string name="sc_bluetooth_undetected">关闭检测</string>
+    <string name="sc_open_bluetooth">Enable Bluetooth</string>
+    <string name="sc_close_bluetooth">Disable Bluetooth</string>
+    <string name="sc_bluetooth_detected">Detectable</string>
+    <string name="sc_bluetooth_undetected">Undetectable</string>
     
-    <string name="paired_bluetooth_devices">已配对的设备</string>
-    <string name="usable_bluetooth_devices">可用设备</string>
+    <string name="paired_bluetooth_devices">Paired Devices</string>
+    <string name="usable_bluetooth_devices">Available Devices</string>
 
-    <string name="device_unsupported_bluetooth">设备不支持蓝牙</string>
-    <string name="title_activity_main2">Main2Activity</string>
+    <string name="device_unsupported_bluetooth">Unsupported Bluetooth</string>
+    <!--<string name="title_activity_main2">Main2Activity</string>-->
 
-    <string name="navi_tencent_raster">腾讯栅格</string>
-    <string name="navi_tencent_vector">腾讯矢量</string>
+    <string name="navi_tencent_raster">Tencent Map Raster</string>
+    <string name="navi_tencent_vector">Tencent Map Vector</string>
+
+    <string name="bluetooth_device_connected">Device Connected</string>
 </resources>

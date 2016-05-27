@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">MapCompare</string>
+    <string name="action_bluetooth">蓝牙</string>
+    <string name="action_descoverable_descoverable">开放检测</string>
+    <string name="action_descoverable_undescoverable">关闭检测</string>
+    <string name="action_connect">连接设备</string>
+
+    <string name="dialog_title_bluetooth">蓝牙设备</string>
+    <string name="toast_bluetooth_closed">请打开蓝牙</string>
+
+    <string name="sc_open_bluetooth">打开蓝牙</string>
+    <string name="sc_close_bluetooth">关闭蓝牙</string>
+    <string name="sc_bluetooth_detected">开放检测</string>
+    <string name="sc_bluetooth_undetected">关闭检测</string>
+    
+    <string name="paired_bluetooth_devices">已配对的设备</string>
+    <string name="usable_bluetooth_devices">可用设备</string>
+
+    <string name="device_unsupported_bluetooth">设备不支持蓝牙</string>
+    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="navi_tencent_raster">腾讯栅格</string>
+    <string name="navi_tencent_vector">腾讯矢量</string>
+
+    <string name="bluetooth_device_connected">蓝牙设备已连接</string>
+</resources>
